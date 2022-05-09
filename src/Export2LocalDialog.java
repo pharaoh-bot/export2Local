@@ -1,11 +1,14 @@
+import com.intellij.compiler.server.BuildManager;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.packaging.artifacts.ArtifactManager;
 import com.intellij.ui.ToolbarDecorator;
 import com.intellij.ui.components.JBList;
 import org.apache.commons.lang3.StringUtils;
@@ -213,6 +216,22 @@ public class Export2LocalDialog extends JDialog {
     private void createUIComponents() {
         VirtualFile[] data = event.getData(LangDataKeys.VIRTUAL_FILE_ARRAY);
         fieldList = new JBList(data);
+
+
+        // 测试匹配项目module
+        Module[] modules = event.getData(LangDataKeys.MODULE_CONTEXT_ARRAY);
+        for (Module module : modules) {
+            ModuleManager instance = ModuleManager.getInstance(event.getProject());
+            // target/classes
+            CompilerModuleExtension compilerModuleExtension = CompilerModuleExtension.getInstance(module);
+            VirtualFile compilerOutputPath = compilerModuleExtension.getCompilerOutputPath();
+
+            // 获取artifact
+            // 1.war
+            // 2.exploded-war
+            ArtifactManager.getInstance(event.getProject()).getArtifacts()[1].getArtifactType().getId();
+
+        }
         fieldList.setEmptyText("No File Selected!");
         ToolbarDecorator decorator = ToolbarDecorator.createDecorator(fieldList);
         filePanel = decorator.createPanel();
